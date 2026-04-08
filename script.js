@@ -1,124 +1,178 @@
-// Data State
-let subscriptions = [
-    { label: 'Netflix', cost: 15.99, cycle: 'Monthly' },
-    { label: 'Spotify', cost: 10.99, cycle: 'Monthly' },
-    { label: 'Amazon Prime', cost: 139.00, cycle: 'Yearly' }
-];
+document.addEventListener("DOMContentLoaded", () => {
+    // --- State Management ---
+    let isLoginMode = true;
+    let currentUser = localStorage.getItem("subtrack_current_user");
 
-let myChart;
+    // --- DOM Elements ---
+    // Auth
+    const authView = document.getElementById("auth-view");
+    const authForm = document.getElementById("auth-form");
+    const authSubtitle = document.getElementById("auth-subtitle");
+    const authBtn = document.getElementById("auth-btn");
+    const toggleAuthLink = document.getElementById("toggle-auth-link");
+    const authToggleText = document.getElementById("auth-toggle-text");
+    const authError = document.getElementById("auth-error");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
 
-// --- Authentication UI ---
-function login() {
-    document.getElementById('login-screen').classList.remove('active');
-    document.getElementById('app-screen').classList.add('active');
-    renderSubscriptions();
-    renderChart();
-}
+    // Dashboard
+    const dashboardView = document.getElementById("dashboard-view");
+    const welcomeMessage = document.getElementById("welcome-message");
+    const logoutBtn = document.getElementById("logout-btn");
+    const addSubForm = document.getElementById("add-sub-form");
+    const subsGrid = document.getElementById("subs-grid");
+    const totalMonthlyCost = document.getElementById("total-monthly-cost");
 
-// --- Navigation ---
-function switchTab(tabId) {
-    // Update nav links
-    document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
-    event.target.classList.add('active');
-
-    // Update main views
-    document.querySelectorAll('.tab-content').forEach(section => section.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-
-    if(tabId === 'dashboard') {
-        renderChart(); // Refresh chart when visiting dashboard
+    // --- Initialization ---
+    if (currentUser) {
+        showDashboard();
     }
-}
 
-// --- Subscription Management ---
-function renderSubscriptions() {
-    const list = document.getElementById('subscription-list');
-    list.innerHTML = '';
-    subscriptions.forEach(sub => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <span><strong>${sub.label}</strong> <small>(${sub.cycle})</small></span>
-            <span>$${sub.cost.toFixed(2)}</span>
-        `;
-        list.appendChild(li);
-    });
-}
-
-function addSubscription() {
-    const name = document.getElementById('sub-name').value;
-    const cost = parseFloat(document.getElementById('sub-cost').value);
-    const cycle = document.getElementById('sub-cycle').value;
-
-    if (name && !isNaN(cost)) {
-        subscriptions.push({ label: name, cost: cost, cycle: cycle });
-        renderSubscriptions();
+    // --- Auth Logic ---
+    toggleAuthLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        isLoginMode = !isLoginMode;
+        authError.classList.add("hidden");
         
-        // Reset inputs
-        document.getElementById('sub-name').value = '';
-        document.getElementById('sub-cost').value = '';
-        alert(`Successfully added ${name}. If email alerts are on, you will be notified before the next billing date.`);
-    } else {
-        alert("Please enter a valid label and cost.");
-    }
-}
-
-// --- Chart.js Graph Implementation ---
-function renderChart() {
-    const ctx = document.getElementById('monthlyChart').getContext('2d');
-    
-    // Quick math to normalize costs to a monthly metric
-    const labels = subscriptions.map(sub => sub.label);
-    const data = subscriptions.map(sub => {
-        if(sub.cycle === 'Yearly') return sub.cost / 12;
-        if(sub.cycle === 'Weekly') return sub.cost * 4;
-        return sub.cost;
+        if (isLoginMode) {
+            authSubtitle.textContent = "Sign in to manage your bills";
+            authBtn.textContent = "Login";
+            authToggleText.textContent = "Don't have an account?";
+            toggleAuthLink.textContent = "Register here";
+        } else {
+            authSubtitle.textContent = "Create an account to get started";
+            authBtn.textContent = "Register";
+            authToggleText.textContent = "Already have an account?";
+            toggleAuthLink.textContent = "Login here";
+        }
     });
 
-    if (myChart) myChart.destroy(); // Destroy previous instance if it exists
+    authForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        const users = JSON.parse(localStorage.getItem("subtrack_users")) || {};
 
-    myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Monthly Estimated Cost ($)',
-                data: data,
-                backgroundColor: '#764ba2',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
+        if (isLoginMode) {
+            // Login
+            if (users[username] && users[username] === password) {
+                currentUser = username;
+                localStorage.setItem("subtrack_current_user", username);
+                showDashboard();
+            } else {
+                showError("Invalid username or password.");
+            }
+        } else {
+            // Register
+            if (users[username]) {
+                showError("Username already exists.");
+            } else {
+                users[username] = password;
+                localStorage.setItem("subtrack_users", JSON.stringify(users));
+                // Auto-login after registration
+                currentUser = username;
+                localStorage.setItem("subtrack_current_user", username);
+                showDashboard();
             }
         }
     });
-}
 
-// --- Community Chat Logic ---
-function openChat(userName, service) {
-    document.getElementById('chat-header').innerText = `Chatting with ${userName} about ${service}`;
-    
-    const messages = document.getElementById('chat-messages');
-    messages.innerHTML = `
-        <div class="msg them">Hi! I saw you are looking to split a ${service} plan?</div>
-    `;
-    
-    // Enable inputs
-    document.getElementById('msg-input').disabled = false;
-    document.getElementById('send-btn').disabled = false;
-}
-
-function sendMessage() {
-    const input = document.getElementById('msg-input');
-    const msgText = input.value.trim();
-    if (msgText) {
-        const messages = document.getElementById('chat-messages');
-        messages.innerHTML += `<div class="msg me">${msgText}</div>`;
-        input.value = '';
-        
-        // Auto-scroll to bottom
-        messages.scrollTop = messages.scrollHeight;
+    function showError(msg) {
+        authError.textContent = msg;
+        authError.classList.remove("hidden");
     }
-}
+
+    logoutBtn.addEventListener("click", () => {
+        currentUser = null;
+        localStorage.removeItem("subtrack_current_user");
+        authForm.reset();
+        authError.classList.add("hidden");
+        authView.classList.remove("hidden");
+        dashboardView.classList.add("hidden");
+    });
+
+    // --- Dashboard Logic ---
+    function showDashboard() {
+        authView.classList.add("hidden");
+        dashboardView.classList.remove("hidden");
+        welcomeMessage.textContent = `Welcome, ${currentUser}`;
+        renderSubscriptions();
+    }
+
+    function getSubscriptions() {
+        const key = `subtrack_subs_${currentUser}`;
+        return JSON.parse(localStorage.getItem(key)) || [];
+    }
+
+    function saveSubscriptions(subs) {
+        const key = `subtrack_subs_${currentUser}`;
+        localStorage.setItem(key, JSON.stringify(subs));
+    }
+
+    addSubForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById("sub-name").value.trim();
+        const cost = parseFloat(document.getElementById("sub-cost").value);
+        const cycle = document.getElementById("sub-cycle").value;
+
+        if (!name || isNaN(cost) || !cycle) return;
+
+        const newSub = {
+            id: Date.now().toString(),
+            name,
+            cost,
+            cycle
+        };
+
+        const subs = getSubscriptions();
+        subs.push(newSub);
+        saveSubscriptions(subs);
+        
+        addSubForm.reset();
+        renderSubscriptions();
+    });
+
+    // Make delete globally accessible for inline HTML onclick handler
+    window.deleteSubscription = function(id) {
+        let subs = getSubscriptions();
+        subs = subs.filter(sub => sub.id !== id);
+        saveSubscriptions(subs);
+        renderSubscriptions();
+    };
+
+    function renderSubscriptions() {
+        const subs = getSubscriptions();
+        subsGrid.innerHTML = "";
+        let monthlyTotal = 0;
+
+        if (subs.length === 0) {
+            subsGrid.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">No subscriptions added yet. Start by adding one above!</p>`;
+            totalMonthlyCost.textContent = `Total: $0.00 / mo`;
+            return;
+        }
+
+        subs.forEach(sub => {
+            // Calculate normalized monthly cost for the dashboard overview
+            let normalizedMonthly = sub.cost;
+            if (sub.cycle === "Yearly") normalizedMonthly = sub.cost / 12;
+            if (sub.cycle === "Weekly") normalizedMonthly = sub.cost * 4.33;
+            monthlyTotal += normalizedMonthly;
+
+            const card = document.createElement("div");
+            card.className = "sub-card";
+            card.innerHTML = `
+                <div class="sub-header">
+                    <h3 class="sub-name">${sub.name}</h3>
+                    <button class="delete-btn" onclick="deleteSubscription('${sub.id}')" title="Delete Plan">&times;</button>
+                </div>
+                <div class="sub-details">
+                    <div class="sub-price">$${sub.cost.toFixed(2)} <span class="sub-cycle">/ ${sub.cycle.toLowerCase()}</span></div>
+                </div>
+            `;
+            subsGrid.appendChild(card);
+        });
+
+        totalMonthlyCost.textContent = `Total: $${monthlyTotal.toFixed(2)} / mo`;
+    }
+});
