@@ -3,98 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SubShare - Track & Share Subscriptions</title>
+    <title>SubTrack - Manage Your Subscriptions</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="login-screen" class="screen active">
-        <div class="login-box">
-            <h2>Welcome to SubShare</h2>
-            <p>Track your bills and split costs with others.</p>
-            <input type="email" placeholder="Email address" id="email-input">
-            <input type="password" placeholder="Password">
-            <button onclick="login()">Login / Register</button>
-        </div>
-    </div>
-
-    <div id="app-screen" class="screen">
-        <nav class="sidebar">
-            <h2 class="logo">SubShare</h2>
-            <ul class="nav-links">
-                <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
-                <li onclick="switchTab('subscriptions')">My Subscriptions</li>
-                <li onclick="switchTab('community')">Community & Chat</li>
-            </ul>
-            <div class="settings">
-                <label>
-                    <input type="checkbox" checked id="email-alerts">
-                    Email me upcoming bill alerts
-                </label>
-            </div>
-        </nav>
-
-        <main class="content">
-            <section id="dashboard" class="tab-content active">
-                <header>
-                    <h1>Dashboard</h1>
-                    <p>Your monthly subscription breakdown.</p>
-                </header>
-                <div class="chart-container">
-                    <canvas id="monthlyChart"></canvas>
+    <main id="auth-view" class="view-container">
+        <div class="auth-card">
+            <h1 class="brand-logo">SubTrack</h1>
+            <p class="subtitle" id="auth-subtitle">Sign in to manage your bills</p>
+            
+            <form id="auth-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required placeholder="Enter your username">
                 </div>
-            </section>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Enter your password">
+                </div>
+                
+                <button type="submit" id="auth-btn" class="btn btn-primary">Login</button>
+                <p class="toggle-auth">
+                    <span id="auth-toggle-text">Don't have an account?</span> 
+                    <a href="#" id="toggle-auth-link">Register here</a>
+                </p>
+            </form>
+            <div id="auth-error" class="error-msg hidden"></div>
+        </div>
+    </main>
 
-            <section id="subscriptions" class="tab-content">
-                <header>
-                    <h1>My Subscriptions</h1>
-                    <p>Manage your custom labels and billing cycles.</p>
-                </header>
-                <div class="form-card">
-                    <h3>Add New Subscription</h3>
+    <main id="dashboard-view" class="view-container hidden">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1 class="brand-logo">SubTrack</h1>
+                <div class="user-controls">
+                    <span id="welcome-message">Welcome, User</span>
+                    <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <section class="add-sub-section">
+                <h2>Add New Subscription</h2>
+                <form id="add-sub-form" class="inline-form">
                     <div class="input-group">
-                        <input type="text" id="sub-name" placeholder="Custom Label (e.g. Netflix)">
-                        <input type="number" id="sub-cost" placeholder="Cost ($)">
-                        <select id="sub-cycle">
+                        <input type="text" id="sub-name" required placeholder="e.g., Netflix, Gym">
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="sub-cost" step="0.01" required placeholder="Cost (e.g., 14.99)">
+                    </div>
+                    <div class="input-group">
+                        <select id="sub-cycle" required>
+                            <option value="" disabled selected>Billing Cycle</option>
+                            <option value="Weekly">Weekly</option>
                             <option value="Monthly">Monthly</option>
                             <option value="Yearly">Yearly</option>
-                            <option value="Weekly">Weekly</option>
                         </select>
-                        <button onclick="addSubscription()">Add</button>
                     </div>
-                </div>
-                <ul id="subscription-list" class="item-list">
-                    </ul>
+                    <button type="submit" class="btn btn-primary">Add Plan</button>
+                </form>
             </section>
 
-            <section id="community" class="tab-content">
-                <header>
-                    <h1>Find Partners & Share</h1>
-                    <p>Search for users looking to split costs.</p>
-                </header>
-                <div class="community-layout">
-                    <div class="search-users">
-                        <input type="text" placeholder="Search by service (e.g. Spotify)...">
-                        <ul class="user-list">
-                            <li onclick="openChat('Alex M.', 'Netflix')"><strong>Alex M.</strong> - Wants to share Netflix</li>
-                            <li onclick="openChat('Sarah J.', 'Spotify Family')"><strong>Sarah J.</strong> - Wants to share Spotify Family</li>
-                        </ul>
-                    </div>
-                    <div class="chat-window">
-                        <h3 id="chat-header">Select a user to chat</h3>
-                        <div class="messages" id="chat-messages">
-                            </div>
-                        <div class="chat-input">
-                            <input type="text" id="msg-input" placeholder="Type a message..." disabled>
-                            <button id="send-btn" onclick="sendMessage()" disabled>Send</button>
-                        </div>
-                    </div>
+            <section class="subs-list-section">
+                <div class="section-header">
+                    <h2>Your Active Subscriptions</h2>
+                    <h3 id="total-monthly-cost" class="total-cost">Total: $0.00 / mo</h3>
                 </div>
+                <div id="subs-grid" class="subs-grid">
+                    </div>
             </section>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <script src="app.js"></script>
 </body>
