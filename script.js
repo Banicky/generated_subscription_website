@@ -6,12 +6,10 @@ const supabase = createClient(
 )
 
 document.addEventListener("DOMContentLoaded", () => {
-    // --- State Management ---
     let isLoginMode = true;
-    let currentUser = localStorage.getItem("membershipt_current_user");
+    let currentUser = null;
 
-    // --- DOM Elements ---
-    // Auth
+    // DOM Elements
     const authView = document.getElementById("auth-view");
     const authForm = document.getElementById("auth-form");
     const authSubtitle = document.getElementById("auth-subtitle");
@@ -19,10 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggleAuthLink = document.getElementById("toggle-auth-link");
     const authToggleText = document.getElementById("auth-toggle-text");
     const authError = document.getElementById("auth-error");
-    const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
 
-    // Dashboard
     const dashboardView = document.getElementById("dashboard-view");
     const welcomeMessage = document.getElementById("welcome-message");
     const logoutBtn = document.getElementById("logout-btn");
@@ -30,156 +27,119 @@ document.addEventListener("DOMContentLoaded", () => {
     const subsGrid = document.getElementById("subs-grid");
     const totalMonthlyCost = document.getElementById("total-monthly-cost");
 
-    // --- Initialization ---
-    if (currentUser) {
-        showDashboard();
-    }
+    // Listen for Auth State Changes
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (session && session.user) {
+            currentUser = session.user;
+            showDashboard();
+        } else {
+            currentUser = null;
+            showAuth();
+        }
+    });
 
-    // --- Auth Logic ---
     toggleAuthLink.addEventListener("click", (e) => {
         e.preventDefault();
         isLoginMode = !isLoginMode;
         authError.classList.add("hidden");
-        
-        if (isLoginMode) {
-            authSubtitle.textContent = "Sign in to manage your bills";
-            authBtn.textContent = "Login";
-            authToggleText.textContent = "Don't have an account?";
-            toggleAuthLink.textContent = "Register here";
-        } else {
-            authSubtitle.textContent = "Create an account to get started";
-            authBtn.textContent = "Register";
-            authToggleText.textContent = "Already have an account?";
-            toggleAuthLink.textContent = "Login here";
-        }
+        authSubtitle.textContent = isLoginMode ? "Sign in to manage your bills" : "Create an account to get started";
+        authBtn.textContent = isLoginMode ? "Login" : "Register";
+        authToggleText.textContent = isLoginMode ? "Don't have an account?" : "Already have an account?";
+        toggleAuthLink.textContent = isLoginMode ? "Register here" : "Login here";
     });
 
-    authForm.addEventListener("submit", (e) => {
+    authForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
-        const users = JSON.parse(localStorage.getItem("membershipt_users")) || {};
+        
+        authBtn.disabled = true;
+        authBtn.textContent = "Processing...";
+        authError.classList.add("hidden");
 
-        if (isLoginMode) {
-            // Login
-            if (users[username] && users[username] === password) {
-                currentUser = username;
-                localStorage.setItem("membershipt_current_user", username);
-                showDashboard();
-            } else {
-                showError("Invalid username or password.");
-            }
-        } else {
-            // Register
-            if (users[username]) {
-                showError("Username already exists.");
-            } else {
-                users[username] = password;
-                localStorage.setItem("membershipt_users", JSON.stringify(users));
-                // Auto-login after registration
-                currentUser = username;
-                localStorage.setItem("membershipt_current_user", username);
-                showDashboard();
-            }
+        const { error } = isLoginMode 
+            ? await supabase.auth.signInWithPassword({ email, password })
+            : await supabase.auth.signUp({ email, password });
+
+        if (error) {
+            authError.textContent = error.message;
+            authError.classList.remove("hidden");
+            authBtn.disabled = false;
+            authBtn.textContent = isLoginMode ? "Login" : "Register";
         }
     });
 
-    function showError(msg) {
-        authError.textContent = msg;
-        authError.classList.remove("hidden");
+    logoutBtn.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+    });
+
+    function showAuth() {
+        dashboardView.classList.add("hidden");
+        authView.classList.remove("hidden");
+        authForm.reset();
     }
 
-    logoutBtn.addEventListener("click", () => {
-        currentUser = null;
-        localStorage.removeItem("membershipt_current_user");
-        authForm.reset();
-        authError.classList.add("hidden");
-        authView.classList.remove("hidden");
-        dashboardView.classList.add("hidden");
-    });
-
-    // --- Dashboard Logic ---
     function showDashboard() {
         authView.classList.add("hidden");
         dashboardView.classList.remove("hidden");
-        welcomeMessage.textContent = `Welcome, ${currentUser}`;
+        welcomeMessage.textContent = `Welcome, ${currentUser.email.split('@')[0]}`;
         renderSubscriptions();
     }
 
-    function getSubscriptions() {
-        const key = `membershipt_subs_${currentUser}`;
-        return JSON.parse(localStorage.getItem(key)) || [];
-    }
-
-    function saveSubscriptions(subs) {
-        const key = `membershipt_subs_${currentUser}`;
-        localStorage.setItem(key, JSON.stringify(subs));
-    }
-
-    addSubForm.addEventListener("submit", (e) => {
+    addSubForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
         const name = document.getElementById("sub-name").value.trim();
         const cost = parseFloat(document.getElementById("sub-cost").value);
         const cycle = document.getElementById("sub-cycle").value;
 
-        if (!name || isNaN(cost) || !cycle) return;
+        const { error } = await supabase
+            .from('subscriptions')
+            .insert([{ user_id: currentUser.id, name, cost, cycle }]);
 
-        const newSub = {
-            id: Date.now().toString(),
-            name,
-            cost,
-            cycle
-        };
-
-        const subs = getSubscriptions();
-        subs.push(newSub);
-        saveSubscriptions(subs);
-        
-        addSubForm.reset();
-        renderSubscriptions();
+        if (!error) {
+            addSubForm.reset();
+            renderSubscriptions();
+        }
     });
 
-    // Make delete globally accessible for inline HTML onclick handler
-    window.deleteSubscription = function(id) {
-        let subs = getSubscriptions();
-        subs = subs.filter(sub => sub.id !== id);
-        saveSubscriptions(subs);
-        renderSubscriptions();
+    window.deleteSubscription = async function(id) {
+        const { error } = await supabase.from('subscriptions').delete().eq('id', id);
+        if (!error) renderSubscriptions();
     };
 
-    function renderSubscriptions() {
-        const subs = getSubscriptions();
+    async function renderSubscriptions() {
+        subsGrid.innerHTML = "Loading...";
+        const { data: subs, error } = await supabase
+            .from('subscriptions')
+            .select('*')
+            .eq('user_id', currentUser.id);
+
         subsGrid.innerHTML = "";
         let monthlyTotal = 0;
 
-        if (subs.length === 0) {
-            subsGrid.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1;">No subscriptions added yet. Start by adding one above!</p>`;
+        if (error || !subs || subs.length === 0) {
+            subsGrid.innerHTML = `<p style="color: var(--text-muted);">No subscriptions found.</p>`;
             totalMonthlyCost.textContent = `Total: $0.00 / mo`;
             return;
         }
 
         subs.forEach(sub => {
-            // Calculate normalized monthly cost for the dashboard overview
-            let normalizedMonthly = sub.cost;
-            if (sub.cycle === "Yearly") normalizedMonthly = sub.cost / 12;
-            if (sub.cycle === "Weekly") normalizedMonthly = sub.cost * 4.33;
-            monthlyTotal += normalizedMonthly;
+            let monthly = parseFloat(sub.cost);
+            if (sub.cycle === "Yearly") monthly /= 12;
+            if (sub.cycle === "Weekly") monthly *= 4.33;
+            monthlyTotal += monthly;
 
             const card = document.createElement("div");
             card.className = "sub-card";
             card.innerHTML = `
                 <div class="sub-header">
                     <h3 class="sub-name">${sub.name}</h3>
-                    <button class="delete-btn" onclick="deleteSubscription('${sub.id}')" title="Delete Plan">&times;</button>
+                    <button class="delete-btn" onclick="deleteSubscription('${sub.id}')">&times;</button>
                 </div>
-                <div class="sub-details">
-                    <div class="sub-price">$${sub.cost.toFixed(2)} <span class="sub-cycle">/ ${sub.cycle.toLowerCase()}</span></div>
-                </div>
+                <div class="sub-price">$${parseFloat(sub.cost).toFixed(2)} <span class="sub-cycle">/ ${sub.cycle.toLowerCase()}</span></div>
             `;
             subsGrid.appendChild(card);
         });
-
         totalMonthlyCost.textContent = `Total: $${monthlyTotal.toFixed(2)} / mo`;
     }
 });
