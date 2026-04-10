@@ -1,7 +1,14 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+    'https://honudnbnumkoytlygbhx.supabase.co',
+    'sb_publishable_eHzVx9-Sq0hdiepUnxgcPQ_Ti0437dl'
+)
+
 document.addEventListener("DOMContentLoaded", () => {
     // --- State Management ---
     let isLoginMode = true;
-    let currentUser = localStorage.getItem("subtrack_current_user");
+    let currentUser = localStorage.getItem("membershipt_current_user");
 
     // --- DOM Elements ---
     // Auth
@@ -51,13 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
-        const users = JSON.parse(localStorage.getItem("subtrack_users")) || {};
+        const users = JSON.parse(localStorage.getItem("membershipt_users")) || {};
 
         if (isLoginMode) {
             // Login
             if (users[username] && users[username] === password) {
                 currentUser = username;
-                localStorage.setItem("subtrack_current_user", username);
+                localStorage.setItem("membershipt_current_user", username);
                 showDashboard();
             } else {
                 showError("Invalid username or password.");
@@ -68,10 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 showError("Username already exists.");
             } else {
                 users[username] = password;
-                localStorage.setItem("subtrack_users", JSON.stringify(users));
+                localStorage.setItem("membershipt_users", JSON.stringify(users));
                 // Auto-login after registration
                 currentUser = username;
-                localStorage.setItem("subtrack_current_user", username);
+                localStorage.setItem("membershipt_current_user", username);
                 showDashboard();
             }
         }
@@ -84,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     logoutBtn.addEventListener("click", () => {
         currentUser = null;
-        localStorage.removeItem("subtrack_current_user");
+        localStorage.removeItem("membershipt_current_user");
         authForm.reset();
         authError.classList.add("hidden");
         authView.classList.remove("hidden");
@@ -100,12 +107,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getSubscriptions() {
-        const key = `subtrack_subs_${currentUser}`;
+        const key = `membershipt_subs_${currentUser}`;
         return JSON.parse(localStorage.getItem(key)) || [];
     }
 
     function saveSubscriptions(subs) {
-        const key = `subtrack_subs_${currentUser}`;
+        const key = `membershipt_subs_${currentUser}`;
         localStorage.setItem(key, JSON.stringify(subs));
     }
 
