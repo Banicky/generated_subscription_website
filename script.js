@@ -34,7 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
             showDashboard();
         } else {
             currentUser = null;
-            // Reset login mode's text to ensure consistency when user logs out
+            // Reset login mode's text and re-enable button when user logs out
+            authBtn.disabled = false;
             authBtn.textContent = isLoginMode ? "Login" : "Register";
             showAuth();
         }
