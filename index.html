@@ -5,26 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Membershipt - Manage Your Subscriptions</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+    <div id="bg-glow" class="bg-glow"></div>
+
     <main id="auth-view" class="view-container">
         <div class="auth-card">
-            <h1 class="brand-logo">Membershipt</h1>
-            <p class="subtitle" id="auth-subtitle">Sign in to manage your bills</p>
+            <div class="auth-header">
+                <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+                <h1 class="brand-logo">Membershipt</h1>
+                <p class="subtitle" id="auth-subtitle">Sign in to manage your bills</p>
+            </div>
             
             <form id="auth-form">
                 <div class="input-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="name@example.com">
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" id="email" required placeholder="name@example.com">
+                    </div>
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" required placeholder="Enter your password">
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password" required placeholder="Enter your password">
+                    </div>
                 </div>
                 
-                <button type="submit" id="auth-btn" class="btn btn-primary">Login</button>
+                <button type="submit" id="auth-btn" class="btn btn-primary">
+                    <span>Login</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
                 <p class="toggle-auth">
                     <span id="auth-toggle-text">Don't have an account?</span> 
                     <a href="#" id="toggle-auth-link">Register here</a>
@@ -37,40 +52,63 @@
     <main id="dashboard-view" class="view-container hidden">
         <header class="dashboard-header">
             <div class="header-content">
-                <h1 class="brand-logo">Membershipt</h1>
+                <div class="brand-wrapper">
+                    <div class="logo-icon-small"><i class="fa-solid fa-wallet"></i></div>
+                    <h1 class="brand-logo">Membershipt</h1>
+                </div>
                 <div class="user-controls">
-                    <span id="welcome-message">Welcome!</span>
-                    <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                    <div class="user-badge">
+                        <i class="fa-regular fa-user"></i>
+                        <span id="welcome-message">Welcome!</span>
+                    </div>
+                    <button id="logout-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
                 </div>
             </div>
         </header>
 
         <div class="dashboard-content">
             <section class="add-sub-section">
-                <h2>Add New Subscription</h2>
+                <div class="section-badge">New Plan</div>
+                <h2>Add Subscription</h2>
                 <form id="add-sub-form" class="inline-form">
                     <div class="input-group">
-                        <input type="text" id="sub-name" required placeholder="e.g., Netflix, Gym">
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-tag"></i>
+                            <input type="text" id="sub-name" required placeholder="e.g., Netflix, Gym">
+                        </div>
                     </div>
                     <div class="input-group">
-                        <input type="number" id="sub-cost" step="0.01" required placeholder="Cost (e.g., 14.99)">
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                            <input type="number" id="sub-cost" step="0.01" required placeholder="14.99">
+                        </div>
                     </div>
                     <div class="input-group">
-                        <select id="sub-cycle" required>
-                            <option value="" disabled selected>Billing Cycle</option>
-                            <option value="Weekly">Weekly</option>
-                            <option value="Monthly">Monthly</option>
-                            <option value="Yearly">Yearly</option>
-                        </select>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <select id="sub-cycle" required>
+                                <option value="" disabled selected>Billing Cycle</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Monthly">Monthly</option>
+                                <option value="Yearly">Yearly</option>
+                            </select>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Add Plan</button>
+                    <button type="submit" class="btn btn-primary shadow-btn">
+                        <i class="fa-solid fa-plus"></i> Add
+                    </button>
                 </form>
             </section>
 
             <section class="subs-list-section">
                 <div class="section-header">
                     <h2>Your Active Subscriptions</h2>
-                    <h3 id="total-monthly-cost" class="total-cost">Total: $0.00 / mo</h3>
+                    <div class="total-badge">
+                        <span class="total-label">Monthly Total</span>
+                        <h3 id="total-monthly-cost" class="total-cost">$0.00</h3>
+                    </div>
                 </div>
                 <div id="subs-grid" class="subs-grid"></div>
             </section>
