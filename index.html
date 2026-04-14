@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membershipt - Manage Your Subscriptions</title>
+    <title>Membershipt — Manage Your Subscriptions</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
+    <!-- ── Auth View ─────────────────────────────────────── -->
     <main id="auth-view" class="view-container">
         <div class="auth-card">
+            <p class="brand-tagline">Your Financial Clarity</p>
             <h1 class="brand-logo">Membershipt</h1>
             <p class="subtitle" id="auth-subtitle">Sign in to manage your bills</p>
-            
+
             <form id="auth-form">
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="name@example.com">
+                <div class="auth-fields">
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required placeholder="name@example.com" autocomplete="email">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required placeholder="Enter your password" autocomplete="current-password">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" required placeholder="Enter your password">
-                </div>
-                
+
                 <button type="submit" id="auth-btn" class="btn btn-primary">Login</button>
                 <p class="toggle-auth">
-                    <span id="auth-toggle-text">Don't have an account?</span> 
+                    <span id="auth-toggle-text">Don't have an account?</span>
                     <a href="#" id="toggle-auth-link">Register here</a>
                 </p>
             </form>
@@ -34,30 +38,61 @@
         </div>
     </main>
 
+    <!-- ── Dashboard View ────────────────────────────────── -->
     <main id="dashboard-view" class="view-container hidden">
         <header class="dashboard-header">
             <div class="header-content">
-                <h1 class="brand-logo">Membershipt</h1>
+                <div class="header-brand">
+                    <h1 class="brand-logo">Membershipt</h1>
+                    <span class="brand-dot"></span>
+                </div>
                 <div class="user-controls">
                     <span id="welcome-message">Welcome!</span>
-                    <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                    <button id="logout-btn" class="btn btn-secondary">Sign out</button>
                 </div>
             </div>
         </header>
 
         <div class="dashboard-content">
+
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <p class="stat-label">Monthly Total</p>
+                    <p class="stat-value gold" id="stat-monthly">$0.00</p>
+                    <p class="stat-sub">estimated per month</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Annual Spend</p>
+                    <p class="stat-value" id="stat-annual">$0.00</p>
+                    <p class="stat-sub">projected this year</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Active Plans</p>
+                    <p class="stat-value" id="stat-count">0</p>
+                    <p class="stat-sub">subscriptions tracked</p>
+                </div>
+            </div>
+
+            <!-- Add Subscription -->
             <section class="add-sub-section">
-                <h2>Add New Subscription</h2>
+                <h2 class="section-title">
+                    <span class="section-title-icon">＋</span>
+                    Add New Subscription
+                </h2>
                 <form id="add-sub-form" class="inline-form">
                     <div class="input-group">
-                        <input type="text" id="sub-name" required placeholder="e.g., Netflix, Gym">
+                        <label for="sub-name">Service Name</label>
+                        <input type="text" id="sub-name" required placeholder="e.g., Netflix, Spotify, Gym">
                     </div>
                     <div class="input-group">
-                        <input type="number" id="sub-cost" step="0.01" required placeholder="Cost (e.g., 14.99)">
+                        <label for="sub-cost">Cost</label>
+                        <input type="number" id="sub-cost" step="0.01" min="0" required placeholder="14.99">
                     </div>
                     <div class="input-group">
+                        <label for="sub-cycle">Billing Cycle</label>
                         <select id="sub-cycle" required>
-                            <option value="" disabled selected>Billing Cycle</option>
+                            <option value="" disabled selected>Select cycle</option>
                             <option value="Weekly">Weekly</option>
                             <option value="Monthly">Monthly</option>
                             <option value="Yearly">Yearly</option>
@@ -67,13 +102,15 @@
                 </form>
             </section>
 
+            <!-- Subscriptions Grid -->
             <section class="subs-list-section">
                 <div class="section-header">
-                    <h2>Your Active Subscriptions</h2>
-                    <h3 id="total-monthly-cost" class="total-cost">Total: $0.00 / mo</h3>
+                    <h2>Active Subscriptions</h2>
+                    <span id="total-monthly-cost" class="total-pill">Total: $0.00 / mo</span>
                 </div>
                 <div id="subs-grid" class="subs-grid"></div>
             </section>
+
         </div>
     </main>
 
