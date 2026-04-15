@@ -46,6 +46,16 @@
                     <h1 class="brand-logo">Membershipt</h1>
                     <span class="brand-dot"></span>
                 </div>
+                <nav class="header-nav">
+                    <a href="#" id="nav-dashboard" class="nav-link active">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                        Dashboard
+                    </a>
+                    <a href="#" id="nav-sharing" class="nav-link">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Split &amp; Share
+                    </a>
+                </nav>
                 <div class="user-controls">
                     <span id="welcome-message">Welcome!</span>
                     <button id="logout-btn" class="btn btn-secondary">Sign out</button>
@@ -53,7 +63,8 @@
             </div>
         </header>
 
-        <div class="dashboard-content">
+        <!-- ── Dashboard Page ──────────────────────────── -->
+        <div id="page-dashboard" class="dashboard-content">
 
             <!-- Stats Bar -->
             <div class="stats-bar">
@@ -98,8 +109,13 @@
                             <option value="Yearly">Yearly</option>
                         </select>
                     </div>
+                    <div class="input-group">
+                        <label for="sub-max-members">Max Slots</label>
+                        <input type="number" id="sub-max-members" min="2" max="20" placeholder="—">
+                    </div>
                     <button type="submit" class="btn btn-primary">Add Plan</button>
                 </form>
+                <p class="form-hint">Set "Max Slots" to create a public group others can join to split this subscription.</p>
             </section>
 
             <!-- Subscriptions Grid -->
@@ -110,6 +126,78 @@
                 </div>
                 <div id="subs-grid" class="subs-grid"></div>
             </section>
+
+        </div>
+
+        <!-- ── Sharing Page ────────────────────────────── -->
+        <div id="page-sharing" class="dashboard-content hidden">
+
+            <div class="sharing-layout">
+                <!-- Left: Browse Groups -->
+                <div class="sharing-main">
+                    <div class="section-header">
+                        <h2>Available Groups</h2>
+                        <span class="total-pill" id="groups-count-pill">0 groups</span>
+                    </div>
+                    <p class="sharing-intro">Browse subscription groups created by other users. Join to split costs and coordinate through group chat.</p>
+
+                    <!-- Search -->
+                    <div class="groups-filter-bar">
+                        <div class="input-group" style="flex:1;margin-bottom:0;">
+                            <input type="text" id="group-search" placeholder="Search groups by name…">
+                        </div>
+                    </div>
+
+                    <div id="groups-grid" class="groups-grid">
+                        <div class="empty-state">
+                            <span class="empty-icon">🔍</span>
+                            <p>Loading available groups…</p>
+                        </div>
+                    </div>
+
+                    <!-- My Groups -->
+                    <div class="section-header" style="margin-top:2.5rem;">
+                        <h2>My Groups</h2>
+                    </div>
+                    <div id="my-groups-grid" class="groups-grid">
+                        <div class="empty-state">
+                            <span class="empty-icon">👥</span>
+                            <p>You haven't joined any groups yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Chat Panel -->
+                <div class="chat-panel">
+                    <div class="chat-panel-header">
+                        <h3>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Group Chat
+                        </h3>
+                    </div>
+
+                    <!-- Chat Tabs -->
+                    <div id="chat-tabs" class="chat-tabs">
+                        <div class="chat-tabs-empty">Join a group to start chatting</div>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="chat-empty-state">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <p>Select a group tab to view messages</p>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div id="chat-input-area" class="chat-input-area">
+                        <input type="text" id="chat-input" placeholder="Type a message…" disabled>
+                        <button id="chat-send-btn" class="btn btn-primary chat-send-btn" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>

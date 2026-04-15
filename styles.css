@@ -138,6 +138,33 @@ h1, h2, h3 {
     border-color: rgba(255,255,255,0.14);
 }
 
+.btn-outline-gold {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.35);
+    font-weight: 500;
+}
+.btn-outline-gold:hover {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+
+.btn-sm {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.78rem;
+}
+
+.btn-danger-outline {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(229,100,122,0.3);
+    font-weight: 500;
+}
+.btn-danger-outline:hover {
+    background: rgba(229,100,122,0.1);
+    border-color: var(--danger);
+}
+
 /* ── Inputs & Selects ────────────────────────────────────── */
 .input-group {
     width: 100%;
@@ -153,7 +180,7 @@ h1, h2, h3 {
     text-transform: uppercase;
 }
 
-input, select {
+input, select, textarea {
     width: 100%;
     padding: 0.78rem 1rem;
     background: var(--bg-glass);
@@ -167,9 +194,9 @@ input, select {
     -webkit-appearance: none;
 }
 
-input::placeholder { color: var(--text-muted); }
+input::placeholder, textarea::placeholder { color: var(--text-muted); }
 
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
     border-color: var(--border-active);
     background: rgba(201,168,76,0.04);
     box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
@@ -336,6 +363,41 @@ select option {
     box-shadow: 0 0 8px var(--gold);
 }
 
+/* ── Header Nav ──────────────────────────────────────────── */
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: var(--text-sub);
+    background: rgba(255,255,255,0.04);
+}
+
+.nav-link.active {
+    color: var(--gold);
+    background: var(--gold-dim);
+}
+
+.nav-link.active svg {
+    stroke: var(--gold);
+}
+
 .user-controls {
     display: flex;
     align-items: center;
@@ -457,7 +519,7 @@ select option {
 
 .inline-form {
     display: grid;
-    grid-template-columns: 2.2fr 1fr 1.1fr auto;
+    grid-template-columns: 2fr 0.9fr 1fr 0.7fr auto;
     gap: 0.9rem;
     align-items: end;
 }
@@ -468,6 +530,13 @@ select option {
     height: 46px;
     white-space: nowrap;
     padding: 0 1.5rem;
+}
+
+.form-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.9rem;
+    padding-left: 0.15rem;
 }
 
 /* ── Subscriptions List ──────────────────────────────────── */
@@ -661,6 +730,85 @@ select option {
     font-weight: 500;
 }
 
+/* ── Share Toggle on Sub Cards ───────────────────────────── */
+.sub-share-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--border);
+}
+
+.sub-share-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.sub-share-label svg { opacity: 0.6; }
+
+.share-toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.share-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.share-toggle .toggle-track {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    transition: background 0.25s, border-color 0.25s;
+}
+
+.share-toggle input:checked + .toggle-track {
+    background: var(--gold-dim);
+    border-color: rgba(201,168,76,0.4);
+}
+
+.share-toggle .toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: transform 0.25s, background 0.25s;
+    pointer-events: none;
+}
+
+.share-toggle input:checked ~ .toggle-thumb {
+    transform: translateX(18px);
+    background: var(--gold);
+}
+
+.share-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-teal);
+    background: rgba(56,201,192,0.1);
+    border: 1px solid rgba(56,201,192,0.2);
+    padding: 0.15rem 0.55rem;
+    border-radius: 99px;
+}
+
 /* ── Empty State ─────────────────────────────────────────── */
 .empty-state {
     grid-column: 1 / -1;
@@ -701,7 +849,404 @@ select option {
     100% { background-position: -200% 0; }
 }
 
-/* ── Responsive ──────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════
+   SHARING PAGE
+   ═══════════════════════════════════════════════════════════ */
+
+.sharing-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.sharing-intro {
+    font-size: 0.9rem;
+    color: var(--text-sub);
+    margin-bottom: 1.25rem;
+    line-height: 1.55;
+}
+
+.groups-filter-bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+/* ── Group Cards ─────────────────────────────────────────── */
+.groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.group-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.35rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    animation: card-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    position: relative;
+    overflow: hidden;
+}
+
+.group-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-teal), var(--accent-blue));
+    opacity: 0.6;
+    transition: opacity 0.25s;
+}
+
+.group-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--glass-border);
+}
+
+.group-card:hover::before { opacity: 1; }
+
+.group-card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.group-card-badge {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: rgba(56,201,192,0.12);
+    border: 1px solid rgba(56,201,192,0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.group-card-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.group-card-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.group-card-owner {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+}
+
+.group-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+}
+
+.group-card-cost {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.group-card-cost sup {
+    font-size: 0.7rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: var(--text-sub);
+    vertical-align: super;
+}
+
+.group-card-cost .per-person {
+    font-size: 0.72rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.group-card-slots {
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.slots-bar {
+    display: flex;
+    gap: 3px;
+    margin-left: 0.25rem;
+}
+
+.slots-bar .slot-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border);
+    transition: background 0.2s;
+}
+
+.slots-bar .slot-dot.filled {
+    background: var(--accent-teal);
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 6px rgba(56,201,192,0.4);
+}
+
+.group-card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.group-card-actions .btn {
+    flex: 1;
+}
+
+/* ── Chat Panel ──────────────────────────────────────────── */
+.chat-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 140px);
+    position: sticky;
+    top: 85px;
+    overflow: hidden;
+}
+
+.chat-panel-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.chat-panel-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chat-panel-header h3 svg {
+    stroke: var(--gold);
+    opacity: 0.8;
+}
+
+/* Chat Tabs */
+.chat-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    flex-shrink: 0;
+    scrollbar-width: none;
+}
+.chat-tabs::-webkit-scrollbar { display: none; }
+
+.chat-tabs-empty {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    width: 100%;
+    text-align: center;
+}
+
+.chat-tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    flex-shrink: 0;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.chat-tab:hover {
+    color: var(--text-sub);
+    background: rgba(255,255,255,0.02);
+}
+
+.chat-tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+
+/* Chat Messages Area */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.08) transparent;
+}
+
+.chat-messages::-webkit-scrollbar { width: 5px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+
+.chat-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.chat-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+    animation: msg-in 0.2s ease both;
+}
+
+@keyframes msg-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg.own {
+    align-self: flex-end;
+}
+
+.chat-msg-sender {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent-teal);
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.02em;
+}
+
+.chat-msg.own .chat-msg-sender {
+    color: var(--gold);
+    text-align: right;
+}
+
+.chat-msg-bubble {
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+}
+
+.chat-msg.own .chat-msg-bubble {
+    background: var(--gold-dim);
+    border-color: rgba(201,168,76,0.2);
+}
+
+.chat-msg-time {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.chat-msg.own .chat-msg-time {
+    text-align: right;
+}
+
+.chat-date-divider {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.chat-date-divider::before,
+.chat-date-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: var(--border);
+}
+
+.chat-date-divider::before { left: 0; }
+.chat-date-divider::after  { right: 0; }
+
+/* Chat Input */
+.chat-input-area {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    background: rgba(15,19,32,0.5);
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.88rem;
+}
+
+.chat-send-btn {
+    padding: 0.65rem 0.85rem !important;
+    min-width: 42px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+    .sharing-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-panel {
+        position: static;
+        height: 500px;
+        order: -1;
+        margin-bottom: 1.5rem;
+    }
+
+    .header-nav {
+        gap: 0.1rem;
+    }
+
+    .nav-link {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.8rem;
+    }
+
+    .header-content {
+        gap: 0.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .stats-bar {
         grid-template-columns: 1fr;
@@ -719,7 +1264,7 @@ select option {
 
     .header-content {
         flex-direction: row;
-        gap: 1rem;
+        gap: 0.5rem;
     }
 
     .dashboard-content {
@@ -728,5 +1273,29 @@ select option {
 
     .auth-card {
         padding: 2.25rem 1.75rem;
+    }
+
+    .header-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(15, 19, 32, 0.95);
+        border-top: 1px solid var(--border);
+        padding: 0.5rem;
+        justify-content: center;
+        z-index: 100;
+        backdrop-filter: blur(16px);
+    }
+
+    .nav-link {
+        flex-direction: column;
+        font-size: 0.7rem;
+        gap: 0.2rem;
+        padding: 0.5rem 1.25rem;
+    }
+
+    #welcome-message {
+        display: none;
     }
 }
